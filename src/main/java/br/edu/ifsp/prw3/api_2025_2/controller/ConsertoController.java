@@ -5,13 +5,13 @@ import br.edu.ifsp.prw3.api_2025_2.dto.DadosConserto;
 import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
 import br.edu.ifsp.prw3.api_2025_2.repository.ConsertoRepository;
 import jakarta.validation.Valid;
-import org.hibernate.Hibernate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
+
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -29,59 +29,70 @@ public class ConsertoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Void> cadastrar(@RequestBody DadosConserto conserto, UriComponentsBuilder uriBuilder) {
-        Conserto novoConserto = new Conserto(conserto);
-        System.out.println(conserto);
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosConserto conserto, UriComponentsBuilder uriBuilder) {
+        try {
+            Conserto novoConserto = new Conserto(conserto);
+            consertoRepository.save(novoConserto);
 
-        consertoRepository.save(novoConserto);
-
-        URI uri = uriBuilder.path("/consertos/{id}").buildAndExpand(novoConserto.getId()).toUri();
-
-        return ResponseEntity.created(uri).build();
+            URI uri = uriBuilder.path("/consertos/{id}").buildAndExpand(novoConserto.getId()).toUri();
+            return ResponseEntity.created(uri).build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao cadastrar conserto: " + e.getMessage());
+        }
     }
 
-
     @GetMapping("/todos")
-    public Page<Conserto>listarTodos(Pageable pageable){
-        return consertoRepository.findAllByAtivoTrue(pageable);
+    public ResponseEntity<Page<Conserto>> listarTodos(Pageable pageable) {
+        Page<Conserto> consertos = consertoRepository.findAllByAtivoTrue(pageable);
+        return ResponseEntity.ok(consertos);
     }
 
     @GetMapping("/resumo")
-    public List<ConsertoResumo> listarResumo() {
-        return consertoRepository.findAllByAtivoTrue().stream().map(ConsertoResumo::new).toList();
+    public ResponseEntity<List<ConsertoResumo>> listarResumo() {
+        List<ConsertoResumo> resumo = consertoRepository.findAllByAtivoTrue()
+                .stream()
+                .map(ConsertoResumo::new)
+                .toList();
+        return ResponseEntity.ok(resumo);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Conserto> buscarPorId(@PathVariable Long id) {
-        return consertoRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.of(consertoRepository.findById(id));
     }
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<DadosAtualizacaoConserto> atualizar(@PathVariable("id") Long id, @RequestBody @Valid DadosAtualizacaoConserto dados) {
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoConserto dados) {
+        try {
+            Conserto conserto = consertoRepository.findById(id).orElse(null);
+            if (conserto == null) {
+                return ResponseEntity.status(404).body("Conserto não encontrado");
+            }
 
-        Conserto conserto = consertoRepository.getReferenceById(id);
+            conserto.setDataSaida(dados.dataSaida());
+            conserto.getMecanico().setNome(dados.nomeMecanico());
+            conserto.getMecanico().setAnosExperiencia(dados.anosExperiencia());
 
-        Hibernate.initialize(conserto.getMecanico());
+            DadosAtualizacaoConserto atualizado = new DadosAtualizacaoConserto(
+                    id, dados.dataSaida(), dados.nomeMecanico(), dados.anosExperiencia());
 
-        conserto.setDataSaida(dados.dataSaida());
-        conserto.getMecanico().setNome(dados.nomeMecanico());
-        conserto.getMecanico().setAnosExperiencia(dados.anosExperiencia());
-
-        DadosAtualizacaoConserto consertoDTO = new DadosAtualizacaoConserto(dados.id(), dados.dataSaida(), dados.nomeMecanico(), dados.anosExperiencia());
-        return ResponseEntity.ok(consertoDTO);
+            return ResponseEntity.ok(atualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro na atualização: " + e.getMessage());
+        }
     }
-
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        Conserto conserto = consertoRepository.getReferenceById(id);
+    public ResponseEntity<?> excluir(@PathVariable Long id) {
+        Conserto conserto = consertoRepository.findById(id).orElse(null);
+        if (conserto == null) {
+            return ResponseEntity.status(404).body("Conserto não encontrado");
+        }
+
         conserto.setAtivo(false);
         return ResponseEntity.noContent().build();
     }
-
-
 }
+
