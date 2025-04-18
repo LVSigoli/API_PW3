@@ -1,0 +1,5 @@
+ALTER TABLE consertos
+    ADD COLUMN ano VARCHAR(4);
+
+ALTER TABLE consertos
+    ADD COLUMN cor VARCHAR(50);
