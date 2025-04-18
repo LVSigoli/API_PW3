@@ -28,7 +28,6 @@ public class ConsertoController {
 
     @GetMapping("/todos")
     public Page<Conserto>listarTodos(Pageable pageable){
-
         return consertoRepository.findAll(pageable);
     }
 
