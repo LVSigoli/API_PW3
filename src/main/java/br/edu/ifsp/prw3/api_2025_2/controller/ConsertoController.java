@@ -1,5 +1,6 @@
 package br.edu.ifsp.prw3.api_2025_2.controller;
 import br.edu.ifsp.prw3.api_2025_2.dto.ConsertoResumo;
+import br.edu.ifsp.prw3.api_2025_2.dto.DadosAtualizacaoConserto;
 import br.edu.ifsp.prw3.api_2025_2.dto.DadosConserto;
 import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
 import br.edu.ifsp.prw3.api_2025_2.repository.ConsertoRepository;
@@ -55,14 +56,15 @@ public class ConsertoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Conserto> atualizar(@RequestBody @Valid Conserto dados) {
-        Conserto conserto = consertoRepository.getReferenceById(dados.getId());
-        conserto.setDataSaida(dados.getDataSaida());
-        conserto.getMecanico().setNome(dados.getMecanico().getNome());
-        conserto.getMecanico().setAnosExperiencia(dados.getMecanico().getAnosExperiencia());
+    public ResponseEntity<Conserto> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoConserto dados) {
+        Conserto conserto = consertoRepository.getReferenceById(id);
+        conserto.setDataSaida(dados.dataSaida());
+        conserto.getMecanico().setNome(dados.nomeMecanico());
+        conserto.getMecanico().setAnosExperiencia(dados.anosExperiencia());
         return ResponseEntity.ok(conserto);
     }
+
 
 }
