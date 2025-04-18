@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor // obrigatório para o JPA conseguir instanciar
 @AllArgsConstructor
-public class Mecanico {
-    private String nome;
-    private int anosExperiencia;
+public class Veiculo {
+    private String marca;
+    private String modelo;
+    private String placa;
 }
