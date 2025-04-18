@@ -67,4 +67,13 @@ public class ConsertoController {
     }
 
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        Conserto conserto = consertoRepository.getReferenceById(id);
+        conserto.setAtivo(false);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
