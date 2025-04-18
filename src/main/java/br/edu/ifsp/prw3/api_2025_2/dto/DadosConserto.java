@@ -8,6 +8,8 @@ public record DadosConserto(
                 message = "A data de entrada deve  estar no formato dd/mm/aaaa" )
         String dataEntrada,
 
+        Boolean ativo,
+
         @Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}",
                 message = "A data de entrada deve  estar no formato dd/mm/aaaa" )
         String dataSaida,

@@ -6,7 +6,6 @@ public record DadosMecanico(
         @NotBlank(message = "Nome do mecânico é obrigatório")
         String nome,
 
-        
         int anosExperiencia) {
 
 }

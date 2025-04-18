@@ -1,0 +1,1 @@
+ALTER TABLE consertos ADD COLUMN ativo BOOLEAN default true;

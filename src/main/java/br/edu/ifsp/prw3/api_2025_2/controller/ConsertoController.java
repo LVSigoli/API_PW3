@@ -1,6 +1,4 @@
 package br.edu.ifsp.prw3.api_2025_2.controller;
-
-
 import br.edu.ifsp.prw3.api_2025_2.dto.ConsertoResumo;
 import br.edu.ifsp.prw3.api_2025_2.dto.DadosConserto;
 import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
