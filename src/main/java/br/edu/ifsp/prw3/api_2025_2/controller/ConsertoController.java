@@ -3,6 +3,7 @@ import br.edu.ifsp.prw3.api_2025_2.dto.ConsertoResumo;
 import br.edu.ifsp.prw3.api_2025_2.dto.DadosConserto;
 import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
 import br.edu.ifsp.prw3.api_2025_2.repository.ConsertoRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,16 @@ public class ConsertoController {
         return consertoRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity<Conserto> atualizar(@RequestBody @Valid Conserto dados) {
+        Conserto conserto = consertoRepository.getReferenceById(dados.getId());
+        conserto.setDataSaida(dados.getDataSaida());
+        conserto.getMecanico().setNome(dados.getMecanico().getNome());
+        conserto.getMecanico().setAnosExperiencia(dados.getMecanico().getAnosExperiencia());
+        return ResponseEntity.ok(conserto);
     }
 
 }
