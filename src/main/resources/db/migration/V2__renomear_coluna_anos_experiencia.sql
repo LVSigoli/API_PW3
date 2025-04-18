@@ -1,0 +1,1 @@
+ALTER TABLE consertos RENAME COLUMN anos_de_experiencia TO anos_experiencia;

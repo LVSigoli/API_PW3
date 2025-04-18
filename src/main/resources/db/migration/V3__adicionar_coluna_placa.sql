@@ -1,0 +1,1 @@
+ALTER TABLE consertos ADD COLUMN placa VARCHAR(7)
