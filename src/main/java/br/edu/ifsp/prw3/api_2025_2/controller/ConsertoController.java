@@ -5,9 +5,13 @@ import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
 import br.edu.ifsp.prw3.api_2025_2.repository.ConsertoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,9 +26,16 @@ public class ConsertoController {
 
     @PostMapping
     @Transactional
-    public void cadastrar(@RequestBody DadosConserto conserto) {
-        consertoRepository.save(new Conserto(conserto));
+    public ResponseEntity<Void> cadastrar(@RequestBody DadosConserto conserto, UriComponentsBuilder uriBuilder) {
+        Conserto novoConserto = new Conserto();
+
+        consertoRepository.save(novoConserto);
+
+        URI uri = uriBuilder.path("/consertos/{id}").buildAndExpand(novoConserto.getId()).toUri();
+
+        return ResponseEntity.created(uri).build();
     }
+
 
     @GetMapping("/todos")
     public Page<Conserto>listarTodos(Pageable pageable){
@@ -34,6 +45,13 @@ public class ConsertoController {
     @GetMapping("/resumo")
     public List<ConsertoResumo> listarResumo() {
         return consertoRepository.findAll().stream().map(ConsertoResumo::new).toList();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Conserto> buscarPorId(@PathVariable Long id) {
+        return consertoRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }
