@@ -35,12 +35,6 @@ public class Conserto {
         this.dataSaida = dados.dataSaida();
         this.ativo = dados.ativo();
         this.mecanico = new Mecanico(dados.mecanico().nome(), dados.mecanico().anosExperiencia());
-        this.veiculo = new Veiculo(
-                dados.veiculo().marca(),
-                dados.veiculo().modelo(),
-                dados.veiculo().ano(),
-                dados.veiculo().cor(),
-                dados.veiculo().placa()
-        );
+        this.veiculo = new Veiculo(       dados.veiculo().marca(), dados.veiculo().modelo(), dados.veiculo().placa(), dados.veiculo().ano(), dados.veiculo().cor());
     }
 }

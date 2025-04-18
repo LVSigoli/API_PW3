@@ -5,6 +5,7 @@ import br.edu.ifsp.prw3.api_2025_2.dto.DadosConserto;
 import br.edu.ifsp.prw3.api_2025_2.models.Conserto;
 import br.edu.ifsp.prw3.api_2025_2.repository.ConsertoRepository;
 import jakarta.validation.Valid;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,8 @@ public class ConsertoController {
     @PostMapping
     @Transactional
     public ResponseEntity<Void> cadastrar(@RequestBody DadosConserto conserto, UriComponentsBuilder uriBuilder) {
-        Conserto novoConserto = new Conserto();
+        Conserto novoConserto = new Conserto(conserto);
+        System.out.println(conserto);
 
         consertoRepository.save(novoConserto);
 
@@ -41,12 +43,12 @@ public class ConsertoController {
 
     @GetMapping("/todos")
     public Page<Conserto>listarTodos(Pageable pageable){
-        return consertoRepository.findAll(pageable);
+        return consertoRepository.findAllByAtivoTrue(pageable);
     }
 
     @GetMapping("/resumo")
     public List<ConsertoResumo> listarResumo() {
-        return consertoRepository.findAll().stream().map(ConsertoResumo::new).toList();
+        return consertoRepository.findAllByAtivoTrue().stream().map(ConsertoResumo::new).toList();
     }
 
     @GetMapping("/{id}")
@@ -58,12 +60,18 @@ public class ConsertoController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<Conserto> atualizar(@PathVariable Long id, @RequestBody @Valid DadosAtualizacaoConserto dados) {
+    public ResponseEntity<DadosAtualizacaoConserto> atualizar(@PathVariable("id") Long id, @RequestBody @Valid DadosAtualizacaoConserto dados) {
+
         Conserto conserto = consertoRepository.getReferenceById(id);
+
+        Hibernate.initialize(conserto.getMecanico());
+
         conserto.setDataSaida(dados.dataSaida());
         conserto.getMecanico().setNome(dados.nomeMecanico());
         conserto.getMecanico().setAnosExperiencia(dados.anosExperiencia());
-        return ResponseEntity.ok(conserto);
+
+        DadosAtualizacaoConserto consertoDTO = new DadosAtualizacaoConserto(dados.id(), dados.dataSaida(), dados.nomeMecanico(), dados.anosExperiencia());
+        return ResponseEntity.ok(consertoDTO);
     }
 
 
