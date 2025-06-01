@@ -2,7 +2,8 @@ package br.edu.ifsp.prw3.api_2025_2.controller;
 
 import br.edu.ifsp.prw3.api_2025_2.dto.DadosAuth;
 import br.edu.ifsp.prw3.api_2025_2.models.Usuario;
-import br.edu.ifsp.prw3.api_2025_2.utils.TokenService;
+import br.edu.ifsp.prw3.api_2025_2.utils.DadosTokenJWT;
+import br.edu.ifsp.prw3.api_2025_2.services.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,22 +14,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.Authenticator;
-
 @RestController
 @RequestMapping("/login")
 public class AuthController {
     @Autowired
     private AuthenticationManager manager;
-    private TokenService tokenService
+    private TokenService tokenService;
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAuth dados) {
 
-        var token = new UsernamePasswordAuthenticationToken( dados.login(), dados.senha() );
+        var token = new UsernamePasswordAuthenticationToken( dados.login(), dados.passwor() );
 
         var authentication = manager.authenticate(token);
 
-        return ResponseEntity.ok(tokenService.generateToken((Usuario) authentication.getPrincipal()));
+        var tokenJWT = tokenService.generateToken((Usuario) authentication.getPrincipal());
+
+        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
     }
 }
