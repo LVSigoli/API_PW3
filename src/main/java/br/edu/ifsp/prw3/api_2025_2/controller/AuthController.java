@@ -1,6 +1,8 @@
 package br.edu.ifsp.prw3.api_2025_2.controller;
 
 import br.edu.ifsp.prw3.api_2025_2.dto.DadosAuth;
+import br.edu.ifsp.prw3.api_2025_2.models.Usuario;
+import br.edu.ifsp.prw3.api_2025_2.utils.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.net.Authenticator;
 public class AuthController {
     @Autowired
     private AuthenticationManager manager;
+    private TokenService tokenService
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAuth dados) {
@@ -26,6 +29,6 @@ public class AuthController {
 
         var authentication = manager.authenticate(token);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(tokenService.generateToken((Usuario) authentication.getPrincipal()));
     }
 }
