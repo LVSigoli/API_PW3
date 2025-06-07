@@ -19,12 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     @Autowired
     private AuthenticationManager manager;
+
+    @Autowired
     private TokenService tokenService;
+
 
     @PostMapping
     public ResponseEntity efetuarLogin(@RequestBody @Valid DadosAuth dados) {
 
-        var token = new UsernamePasswordAuthenticationToken( dados.login(), dados.passwor() );
+        var token = new UsernamePasswordAuthenticationToken( dados.login(), dados.password() );
 
         var authentication = manager.authenticate(token);
 

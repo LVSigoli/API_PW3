@@ -8,5 +8,5 @@ public record DadosAuth (
         String login,
 
         @NotBlank
-        String passwor){}
+        String password){}
 
