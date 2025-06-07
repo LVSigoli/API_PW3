@@ -4,6 +4,14 @@ Esta API permite o cadastro, consulta, atualização e exclusão lógica de **co
 
 ---
 
+## 👨‍🔧 Aluno
+
+- Desenvolvido por: **Lucas Vinicius SIgoli**
+- RA: **3020428**
+- Projeto da disciplina: **Programação Web 3 — IFSP**
+
+--- 
+
 ## 🛠️ Endpoints
 
 ---
@@ -139,8 +147,67 @@ Faz a exclusão lógica de um conserto (`ativo = false`).
 
 ---
 
-## 👨‍🔧 Aluno
+## 🔐 Testes de Segurança (Autenticação e Autorização)
 
-- Desenvolvido por: **Lucas Vinicius SIgoli**
-- RA: **3020428**
-- Projeto da disciplina: **Programação Web 3 — IFSP**
+### Para obter o token 
+- POST /login
+- body (JSON)
+```json
+  {
+    "login" : "asdrubal@gmail.com",
+    "password": "123456" 
+}
+````
+---
+
+### Teste de criação 
+- POST /consertos
+- Usar token em Auth, opção bearer Token
+
+payload em formato JSON enviado no body
+
+```json
+{
+    "dataEntrada": "01/06/2025",
+  "dataSaida": "10/06/2025",
+  "aprovado": true,
+  "mecanico": {
+    "nome": "João da Oficina",
+    "experiencia": 10
+  },
+  "veiculo": {
+    "marca": "Fiat",
+    "modelo": "Uno",
+    "placa": "ABC1234",
+    "ano": "2015",
+    "cor": "Branco"
+  }
+}
+```
+---
+
+### Testar rota de edição 
+- PUT /consertos/1
+
+- Usar token em Auth, opção bearer Token
+
+payload em formato JSON enviado no body
+```json
+{
+  "id": 1,
+  "dataSaida": "15/06/2025",
+  "nomeMecanico": "João Atualizado",
+  "experiencia": 12
+}
+```
+
+### Testar rota de listagem 
+
+- GET /consertos/1
+
+- Usar token em Auth, opção bearer Token
+
+
+
+---
+
